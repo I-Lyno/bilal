@@ -29,7 +29,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pengaturan'),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.blue,
       ),
       body: Consumer<PrayerProvider>(
         builder: (context, provider, child) {
@@ -120,7 +120,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: Colors.teal.shade700,
+              color: Colors.blue.shade700,
             ),
           ),
         ),
@@ -155,7 +155,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: Text(method['name']!),
               subtitle: Text(method['description']!),
               trailing: isSelected
-                  ? const Icon(Icons.check, color: Colors.teal)
+                  ? const Icon(Icons.check, color: Colors.blue)
                   : null,
               selected: isSelected,
               onTap: () {

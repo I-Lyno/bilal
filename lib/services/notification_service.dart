@@ -143,10 +143,11 @@ class NotificationService {
       return;
     }
 
+    // Use custom adzan sound - changed channel ID to force new channel creation
     const androidDetails = AndroidNotificationDetails(
-      'prayer_times',
+      'prayer_times_v2', // Changed from prayer_times to create new channel
       'Waktu Sholat',
-      channelDescription: 'Notifikasi untuk waktu sholat',
+      channelDescription: 'Notifikasi waktu sholat dengan adzan',
       importance: Importance.max,
       priority: Priority.high,
       sound: RawResourceAndroidNotificationSound('adzan'),
@@ -184,14 +185,22 @@ class NotificationService {
     if (!_initialized) await initialize();
 
     const androidDetails = AndroidNotificationDetails(
-      'test',
-      'Test',
-      channelDescription: 'Test notification',
-      importance: Importance.high,
+      'prayer_times_v2', // Use same channel as prayer notifications
+      'Waktu Sholat',
+      channelDescription: 'Notifikasi waktu sholat dengan adzan',
+      importance: Importance.max,
       priority: Priority.high,
+      sound: RawResourceAndroidNotificationSound('adzan'),
+      playSound: true,
+      enableVibration: true,
     );
 
-    const iosDetails = DarwinNotificationDetails();
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      sound: 'adzan.mp3',
+    );
 
     const details = NotificationDetails(
       android: androidDetails,
@@ -200,8 +209,8 @@ class NotificationService {
 
     await _notifications.show(
       0,
-      'Test Notifikasi',
-      'Notifikasi bekerja dengan baik!',
+      'Test Notifikasi 🕌',
+      'Ini adalah test sound adzan untuk notifikasi sholat',
       details,
     );
   }

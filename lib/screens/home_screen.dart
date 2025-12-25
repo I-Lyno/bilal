@@ -52,8 +52,9 @@ class HomeScreen extends StatelessWidget {
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          FloatingActionButton(
+          FloatingActionButton.extended(
             heroTag: 'qibla',
             onPressed: () {
               Navigator.push(
@@ -62,10 +63,15 @@ class HomeScreen extends StatelessWidget {
               );
             },
             backgroundColor: Colors.amber.shade700,
-            child: const Icon(Icons.explore),
+            icon: const Icon(Icons.explore, size: 22),
+            label: const Text(
+              'Kiblat',
+              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
+            ),
+            elevation: 6,
           ),
-          const SizedBox(height: 16),
-          FloatingActionButton(
+          const SizedBox(height: 12),
+          FloatingActionButton.extended(
             heroTag: 'settings',
             onPressed: () {
               Navigator.push(
@@ -73,8 +79,13 @@ class HomeScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const SettingsScreen()),
               );
             },
-            backgroundColor: Colors.teal,
-            child: const Icon(Icons.settings),
+            backgroundColor: Colors.blue.shade600,
+            icon: const Icon(Icons.settings_rounded, size: 22),
+            label: const Text(
+              'Pengaturan',
+              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 0.5),
+            ),
+            elevation: 6,
           ),
         ],
       ),
@@ -83,68 +94,95 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildAppBar(BuildContext context, PrayerProvider provider) {
     return SliverAppBar(
-      expandedHeight: 180,
+      expandedHeight: 200,
       floating: false,
       pinned: true,
+      elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Colors.teal.shade600, Colors.teal.shade800],
+              colors: [Colors.blue.shade600, Colors.blue.shade800],
             ),
           ),
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Jadwal Sholat',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(
-                        Icons.location_on,
-                        color: Colors.white70,
-                        size: 16,
+                      Icon(
+                        Icons.mosque,
+                        color: Colors.white.withOpacity(0.95),
+                        size: 28,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        provider.locationName ?? 'Memuat lokasi...',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.white70,
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Jadwal Sholat',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    DateFormat(
-                      'EEEE, dd MMMM yyyy',
-                      'id_ID',
-                    ).format(DateTime.now()),
-                    style: const TextStyle(fontSize: 14, color: Colors.white70),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_rounded,
+                        color: Colors.white.withOpacity(0.85),
+                        size: 18,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          provider.locationName ?? 'Memuat lokasi...',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.white.withOpacity(0.9),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today_rounded,
+                        color: Colors.white.withOpacity(0.85),
+                        size: 16,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        DateFormat(
+                          'EEEE, dd MMMM yyyy',
+                          'id_ID',
+                        ).format(DateTime.now()),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.85),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
           ),
         ),
-        title: const Text('Bilal', style: TextStyle(color: Colors.white)),
-        centerTitle: true,
       ),
-      backgroundColor: Colors.teal.shade700,
+      backgroundColor: Colors.blue.shade700,
     );
   }
 
@@ -184,7 +222,7 @@ class HomeScreen extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Colors.teal.shade600, Colors.teal.shade800],
+          colors: [Colors.blue.shade600, Colors.blue.shade800],
         ),
       ),
       child: const Center(
@@ -209,7 +247,7 @@ class HomeScreen extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Colors.teal.shade600, Colors.teal.shade800],
+          colors: [Colors.blue.shade600, Colors.blue.shade800],
         ),
       ),
       child: Center(
