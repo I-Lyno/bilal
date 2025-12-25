@@ -82,21 +82,30 @@ class PrayerProvider extends ChangeNotifier {
         final position = await _locationService.getCurrentLocationWithTimeout();
 
         if (position == null) {
-          _error = 'Tidak dapat mendapatkan lokasi. Pastikan GPS aktif.';
-          _setLoading(false);
-          return;
+          // Use default location (Jakarta, Indonesia) for web/fallback
+          print('GPS not available, using default location: Jakarta');
+          _latitude = -6.2088; // Jakarta latitude
+          _longitude = 106.8456; // Jakarta longitude
+          _locationName = 'Jakarta, Indonesia (Default)';
+
+          // Save default location
+          await _prefsService.saveLocation(
+            _latitude!,
+            _longitude!,
+            _locationName!,
+          );
+        } else {
+          _latitude = position.latitude;
+          _longitude = position.longitude;
+          _locationName = 'Lokasi Saya';
+
+          // Save location
+          await _prefsService.saveLocation(
+            position.latitude,
+            position.longitude,
+            _locationName!,
+          );
         }
-
-        _latitude = position.latitude;
-        _longitude = position.longitude;
-        _locationName = 'Lokasi Saya';
-
-        // Save location
-        await _prefsService.saveLocation(
-          position.latitude,
-          position.longitude,
-          _locationName!,
-        );
       }
 
       // Calculate prayer times
