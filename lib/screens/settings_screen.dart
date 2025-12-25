@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:bilal/providers/prayer_provider.dart';
 import 'package:bilal/services/prayer_time_service.dart';
 import 'package:bilal/services/notification_service.dart';
+import 'package:bilal/models/indonesian_cities.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -80,11 +81,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leading: const Icon(Icons.location_on),
                 ),
                 ListTile(
-                  title: const Text('Atur Lokasi Manual'),
-                  subtitle: const Text('Masukkan koordinat custom'),
-                  leading: const Icon(Icons.edit_location),
+                  title: const Text('Pilih Kota'),
+                  subtitle: const Text('Pilih dari daftar kota di Indonesia'),
+                  leading: const Icon(Icons.location_city),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showLocationDialog(context, provider),
+                  onTap: () => _showCityPicker(context, provider),
                 ),
               ]),
               const Divider(height: 32),
@@ -172,79 +173,115 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showLocationDialog(BuildContext context, PrayerProvider provider) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Atur Lokasi Manual'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nama Lokasi',
-                  hintText: 'Contoh: Jakarta',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _latController,
-                decoration: const InputDecoration(
-                  labelText: 'Latitude',
-                  hintText: 'Contoh: -6.2088',
-                ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                  signed: true,
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _lngController,
-                decoration: const InputDecoration(
-                  labelText: 'Longitude',
-                  hintText: 'Contoh: 106.8456',
-                ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                  signed: true,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final lat = double.tryParse(_latController.text);
-                final lng = double.tryParse(_lngController.text);
-                final name = _nameController.text.trim();
+  void _showCityPicker(BuildContext context, PrayerProvider provider) {
+    String searchQuery = '';
 
-                if (lat != null && lng != null && name.isNotEmpty) {
-                  provider.setCustomLocation(lat, lng, name);
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Lokasi berhasil diubah')),
-                  );
-                  _latController.clear();
-                  _lngController.clear();
-                  _nameController.clear();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Mohon isi semua field dengan benar'),
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            final filteredCities = IndonesianCities.searchCities(searchQuery);
+
+            return DraggableScrollableSheet(
+              initialChildSize: 0.9,
+              minChildSize: 0.5,
+              maxChildSize: 0.95,
+              expand: false,
+              builder: (context, scrollController) {
+                return Column(
+                  children: [
+                    // Header
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade700,
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(20),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Pilih Kota',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            decoration: InputDecoration(
+                              hintText: 'Cari kota atau provinsi...',
+                              prefixIcon: const Icon(Icons.search),
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                searchQuery = value;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                }
+                    // City list
+                    Expanded(
+                      child: filteredCities.isEmpty
+                          ? const Center(
+                              child: Text('Tidak ada kota ditemukan'),
+                            )
+                          : ListView.builder(
+                              controller: scrollController,
+                              itemCount: filteredCities.length,
+                              itemBuilder: (context, index) {
+                                final city = filteredCities[index];
+                                return ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor: Colors.blue.shade100,
+                                    child: Icon(
+                                      Icons.location_city,
+                                      color: Colors.blue.shade700,
+                                    ),
+                                  ),
+                                  title: Text(
+                                    city.name,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  subtitle: Text(city.province),
+                                  onTap: () {
+                                    provider.setCustomLocation(
+                                      city.latitude,
+                                      city.longitude,
+                                      '${city.name}, ${city.province}',
+                                    );
+                                    Navigator.pop(context);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Lokasi diubah ke ${city.name}',
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                );
               },
-              child: const Text('Simpan'),
-            ),
-          ],
+            );
+          },
         );
       },
     );
